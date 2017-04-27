@@ -9,8 +9,10 @@ import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import java.io.File;
+import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.lang.reflect.Field;
 
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -26,6 +28,7 @@ import net.minecraftforge.event.world.ExplosionEvent;
 
 import net.minecraftforge.common.config.Configuration;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -37,7 +40,7 @@ import net.minecraft.entity.ai.EntityAITasks;
 public class GranularGrief
 {
 	public static final String MODID = "granulargrief";
-	public static final String NAME = "GranularGrief";
+	public static final String NAME = "Granular Grief";
 	public static final String VERSION = "1.10.2-0.1";
 	
 	public static Logger logger;
@@ -58,12 +61,25 @@ public class GranularGrief
 		
 		
 		if(!enderGrief) {
-			logger.info("Registering event handler to remove enderman griefing AI.");
-			MinecraftForge.EVENT_BUS.register(new EndermanHandler());
+			//logger.info("Registering event handler to remove enderman griefing AI.");
+			//MinecraftForge.EVENT_BUS.register(new EndermanHandler());
+			
+			logger.info("granulargrief: Emptying the global EntityEnderman.CARRIABLE_BLOCKS.");
+			// Use reflection to empty the global EntityEnderman.CARRIABLE_BLOCKS set.
+			try {
+				String fName = ((Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment")) ? "CARRIABLE_BLOCKS" : "field_70827_d";
+				Field f = EntityEnderman.class.getDeclaredField(fName); //NoSuchFieldException
+				f.setAccessible(true);
+				Set<Block> carriable = (Set<Block>) f.get(null); //IllegalAccessException
+				carriable.clear();
+			} catch(Exception e) {
+				logger.info("granulargrief: ERROR: Could not access EntityEnderman.CARRIABLE_BLOCKS: " + e);
+			}
+			
 		}
 		
 		if(!creeperGrief) {
-			logger.info("Registering event handler to remove blocks destruction from creeper detonations.");
+			logger.info("granulargrief: Registering event handler to remove blocks destruction from creeper detonations.");
 			MinecraftForge.EVENT_BUS.register(new CreeperHandler());
 		}
 	}
@@ -77,19 +93,19 @@ public class GranularGrief
 			}
 		}
 	}
-	
+	/*
 	public class EndermanHandler {
 		@SubscribeEvent
 		public void onJoinWorld(EntityJoinWorldEvent event) {
 			Entity entity = event.getEntity();
 			if(entity instanceof EntityEnderman) {
-				//logger.info("Entity " + entity.getClass().getName() + " joined the world.");
+				//logger.info("granulargrief: Entity " + entity.getClass().getName() + " joined the world.");
 				EntityEnderman enderman = (EntityEnderman) entity;
 				
 				List<EntityAITasks.EntityAITaskEntry> toRemove = new ArrayList<EntityAITasks.EntityAITaskEntry>();
 				
 				for(EntityAITasks.EntityAITaskEntry taskEntry: enderman.tasks.taskEntries) {
-					//logger.info("Entity " + enderman.getClass().getName() + " has AI Task " + taskEntry.action.getClass().getName());
+					//logger.info("granulargrief: Entity " + enderman.getClass().getName() + " has AI Task " + taskEntry.action.getClass().getName());
 					// Funny workaround for class obfuscation
 					// Remove all tasks that are a subclass of the enderman class
 					// So far this should only remove the enderman griefing.
@@ -99,12 +115,13 @@ public class GranularGrief
 					}
 				}
 				for(EntityAITasks.EntityAITaskEntry entry: toRemove) {
-						//logger.info("Entity " + enderman.getClass().getName() + " has AI Task " + entry.action.getClass().getName() + " that is now removed.");
+						//logger.info("granulargrief: Entity " + enderman.getClass().getName() + " has AI Task " + entry.action.getClass().getName() + " that is now removed.");
 						enderman.tasks.removeTask(entry.action);
 				}
 				
 			}
 		}
 	}
+	*/
 }
 
