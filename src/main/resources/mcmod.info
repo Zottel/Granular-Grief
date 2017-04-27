@@ -1,0 +1,16 @@
+[
+{
+  "modid": "granulargriefn",
+  "name": "Granular Grief",
+  "description": "Creeper/Enderman Griefing option",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["z0ttel"],
+  "credits": "The Forge and FML guys, for making this work so well",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
