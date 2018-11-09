@@ -3,20 +3,15 @@
 buildscript {
 	repositories {
 		jcenter()
-		
-		maven {
-			name = "forge"
-			
-			url = "http://files.minecraftforge.net/maven"
-		}
+		maven { url = "http://files.minecraftforge.net/maven" }
 	}
 	
 	dependencies {
-		classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+		//classpath 'net.minecraftforge.gradle:ForgeGradle:' + project.forgegradle_version
 	}
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
-
 
 //version = "${minecraft_version}-${mod_version}." + (System.env.BUILD_NUMBER ?: "homebaked")
 version = "${minecraft_version}-${mod_version}"
